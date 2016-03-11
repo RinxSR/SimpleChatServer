@@ -43,6 +43,8 @@ public class SocketHandler implements Runnable {
 
                 }
             }
+            inputStream.close();
+            outputStream.close();
             socket.close();
 
         } catch (IOException e) {
