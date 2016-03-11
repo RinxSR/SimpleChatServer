@@ -10,8 +10,8 @@ import java.util.*;
 public class SocketHandler implements Runnable {
 
     private Socket socket;
-    private static int connetctionCounter;
-    private static List<SocketHandler> handlers = Collections.synchronizedList(new ArrayList<>());
+    private static int connectionCounter;
+    private volatile static List<SocketHandler> handlers = Collections.synchronizedList(new ArrayList<>());
     private PrintWriter out;
     private int numberOfUser;
 
@@ -24,9 +24,9 @@ public class SocketHandler implements Runnable {
 
         try {
             handlers.add(this);
-            connetctionCounter++;
-            numberOfUser = connetctionCounter;
-            System.out.println("user #" + connetctionCounter + " connected");
+            connectionCounter++;
+            numberOfUser = connectionCounter;
+            System.out.println("user #" + connectionCounter + " connected");
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
 
@@ -37,8 +37,8 @@ public class SocketHandler implements Runnable {
                 String message = in.nextLine();
                 broadcast("user #" + numberOfUser + " said: " + message);
                 if (message.equals("exit")) {
-                    System.out.println("user #" + connetctionCounter + " disconnected");
-                    connetctionCounter--;
+                    System.out.println("user #" + connectionCounter + " disconnected");
+                    connectionCounter--;
                     break;
 
                 }
@@ -51,9 +51,8 @@ public class SocketHandler implements Runnable {
     }
 
     public void broadcast(String message) {
-        Iterator<SocketHandler> iterator = handlers.iterator();
-        while (iterator.hasNext()) {
-            iterator.next().out.println(message);
+        for (SocketHandler handler : handlers) {
+            handler.out.println(message);
         }
     }
 }
