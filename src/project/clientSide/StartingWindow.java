@@ -1,4 +1,4 @@
-package ChatServer.clientSide;
+package project.clientSide;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

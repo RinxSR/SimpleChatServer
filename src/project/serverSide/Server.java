@@ -1,4 +1,4 @@
-package ChatServer.serverSide;
+package project.serverSide;
 
 import java.io.IOException;
 import java.net.ServerSocket;
