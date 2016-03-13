@@ -14,9 +14,5 @@ public class Server {
             Socket socket = serverSocket.accept();
             new Thread(new SocketHandler(socket)).start();
         }
-
     }
-
-
-
 }

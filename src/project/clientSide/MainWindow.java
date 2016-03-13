@@ -17,7 +17,7 @@ public class MainWindow {
 
         JTextField textField = new JTextField();
 
-        SocketHandler handler = new SocketHandler(textField, textArea);
+        SocketHandler handler = new SocketHandler(textField, textArea, frame);
         new Thread(handler).start();
 
         textField.addActionListener(new ActionListener() {

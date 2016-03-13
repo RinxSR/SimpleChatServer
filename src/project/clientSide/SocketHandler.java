@@ -12,12 +12,14 @@ public class SocketHandler implements Runnable {
 
     private JTextField textField;
     private JTextArea textArea;
+    private JFrame frame;
 
     private PrintWriter out;
 
-    public SocketHandler(JTextField textField, JTextArea textArea) {
+    public SocketHandler(JTextField textField, JTextArea textArea, JFrame frame) {
         this.textField = textField;
         this.textArea = textArea;
+        this.frame = frame;
     }
 
     @Override
@@ -32,14 +34,18 @@ public class SocketHandler implements Runnable {
             Scanner in = new Scanner(inputStream);
             out = new PrintWriter(outputStream, true);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (in.hasNext()) {
-                        textArea.append(in.nextLine() + "\n");
-                    }
+
+            while (in.hasNext()) {
+                String line = in.nextLine();
+                textArea.append(line + "\n");
+                if (line.equals("You disconnected from server")) {
+                    inputStream.close();
+                    outputStream.close();
+                    socket.close();
+                    frame.dispose();
                 }
-            }).start();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -10,7 +10,7 @@ import java.util.*;
 public class SocketHandler implements Runnable {
 
     private Socket socket;
-    private static int connectionCounter;
+    private volatile static int connectionCounter;
     private volatile static List<SocketHandler> handlers = Collections.synchronizedList(new ArrayList<>());
     private PrintWriter out;
     private int numberOfUser;
@@ -33,14 +33,17 @@ public class SocketHandler implements Runnable {
             Scanner in = new Scanner(inputStream);
             out = new PrintWriter(outputStream, true);
 
+            out.println("You connected to server");
+
             while (true) {
                 String message = in.nextLine();
-                broadcast("user #" + numberOfUser + " said: " + message);
                 if (message.equals("exit")) {
                     System.out.println("user #" + connectionCounter + " disconnected");
+                    out.println("You disconnected from server");
                     connectionCounter--;
                     break;
-
+                } else {
+                    broadcast("user #" + numberOfUser + " said: " + message);
                 }
             }
             inputStream.close();
