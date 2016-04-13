@@ -1,21 +1,25 @@
 package project.serverSide;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.*;
+import java.util.List;
 
 public class SocketHandler implements Runnable {
 
+    private TextArea textArea;
     private Socket socket;
     private volatile static int connectionCounter;
     private volatile static List<SocketHandler> handlers = Collections.synchronizedList(new ArrayList<>());
     private PrintWriter out;
     private int numberOfUser;
 
-    public SocketHandler(Socket socket) {
+    public SocketHandler(Socket socket, TextArea textArea) {
+        this.textArea = textArea;
         this.socket = socket;
     }
 
