@@ -6,11 +6,8 @@ public class MainClass {
 
     public static void main(String[] args) throws IOException {
 
-       /* Server server = new Server();
-
-        server.start();*/
-
-        MainWindow.getInstance();
+        MainWindow window = MainWindow.getInstance();
+        window.getServer().start();
 
     }
 

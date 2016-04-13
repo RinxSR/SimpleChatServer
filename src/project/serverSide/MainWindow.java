@@ -2,46 +2,76 @@ package project.serverSide;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MainWindow extends JFrame {
 
     private static MainWindow instance;
 
-    private Panel panel;
-    private JButton button;
-    private TextArea textArea;
+    private Panel panel1;
+    private Panel panel2;
+    private JButton buttonStart;
+    private JButton buttonStop;
+    private JLabel userCounter;
+    private JTextArea logTextArea;
 
-    private Thread serverThread;
+    private Server server;
 
+    public Server getServer() {
+        return server;
+    }
 
     private MainWindow() {
-        this.setTitle("Simple Chat Server");
-        this.setSize(400, 400);
-        this.setDefaultCloseOperation(HIDE_ON_CLOSE);
-        this.setLocationByPlatform(true);
 
-        panel = new Panel();
-        panel.setLayout(new BorderLayout());
+        setTitle("Simple Chat Server");
+        setSize(500, 500);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLocationByPlatform(true);
 
-        button = new JButton("Server start");
-        button.addItemListener(new ItemListener() {
+        panel1 = new Panel();
+        panel1.setLayout(new BorderLayout());
+
+        panel2 = new Panel();
+        panel2.setLayout(new FlowLayout());
+        panel1.add(panel2, BorderLayout.EAST);
+
+        buttonStart = new JButton("Server start");
+        buttonStart.addActionListener(new ActionListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
+            public void actionPerformed(ActionEvent e) {
+                server.setServerOn(true);
+                logTextArea.append("New connection to the chat is possible\n");
 
             }
         });
-        panel.add(button, BorderLayout.EAST);
+        panel2.add(buttonStart);
+
+        buttonStop = new JButton("Server stop");
+        buttonStop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                server.setServerOn(false);
+                logTextArea.append("New connection to the chat is impossible\n");
+
+            }
+        });
+
+        panel2.add(buttonStop);
 
 
-        this.add(panel, BorderLayout.NORTH);
+        add(panel1, BorderLayout.NORTH);
 
-        textArea = new TextArea();
+        logTextArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(logTextArea);
+        add(scrollPane);
 
-        this.add(textArea);
+        userCounter = new JLabel("0 users is connected");
+        add(userCounter, BorderLayout.SOUTH);
 
-        this.setVisible(true);
+        setVisible(true);
+
+        server = new Server(logTextArea, userCounter);
     }
 
     public static synchronized MainWindow getInstance() {
@@ -52,16 +82,3 @@ public class MainWindow extends JFrame {
     }
 
 }
-
-//                serverThread = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Server server = new Server(textArea);
-//                        try {
-//                            server.start();
-//                        } catch (IOException e1) {
-//                            e1.printStackTrace();
-//                        }
-//                    }
-//                });
-//                serverThread.start();

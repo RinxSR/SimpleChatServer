@@ -1,17 +1,24 @@
 package project.serverSide;
 
-import java.awt.*;
+import javax.swing.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
 
+    private boolean serverOn = false;
 
-    private TextArea textArea;
+    public void setServerOn(boolean serverOn) {
+        this.serverOn = serverOn;
+    }
 
-    public Server(TextArea textArea) {
-        this.textArea = textArea;
+    private JTextArea logTextArea;
+    private JLabel userCounter;
+
+    public Server(JTextArea logTextArea, JLabel userCounter) {
+        this.logTextArea = logTextArea;
+        this.userCounter = userCounter;
     }
 
     public void start() throws IOException {
@@ -20,7 +27,10 @@ public class Server {
 
         while (true) {
             Socket socket = serverSocket.accept();
-            new Thread(new SocketHandler(socket, textArea)).start();
+            if (serverOn) {
+                new Thread(new SocketHandler(socket, logTextArea, userCounter)).start();
+            }
+
         }
     }
 }

@@ -1,26 +1,35 @@
 package project.serverSide;
 
-import java.awt.*;
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class SocketHandler implements Runnable {
 
-    private TextArea textArea;
+    private JLabel userCounter;
+    private JTextArea textArea;
     private Socket socket;
-    private volatile static int connectionCounter;
+
+    public static int getConnectionCounter() {
+        return connectionCounter;
+    }
+
+    private volatile static int connectionCounter = 0;
     private volatile static List<SocketHandler> handlers = Collections.synchronizedList(new ArrayList<>());
     private PrintWriter out;
-    private int numberOfUser;
+    private int userID = 0;
 
-    public SocketHandler(Socket socket, TextArea textArea) {
+    public SocketHandler(Socket socket, JTextArea textArea, JLabel userCounter) {
         this.textArea = textArea;
         this.socket = socket;
+        this.userCounter = userCounter;
     }
 
     @Override
@@ -29,8 +38,10 @@ public class SocketHandler implements Runnable {
         try {
             handlers.add(this);
             connectionCounter++;
-            numberOfUser = connectionCounter;
-            System.out.println("user #" + connectionCounter + " connected");
+            userID++;
+            userCounter.setText(connectionCounter + " users is connected");
+            textArea.append("user #" + userID + " connected. \n");
+
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
 
@@ -41,13 +52,15 @@ public class SocketHandler implements Runnable {
 
             while (true) {
                 String message = in.nextLine();
-                if (message.equals("exit")) {
-                    System.out.println("user #" + connectionCounter + " disconnected");
+                if (message.equalsIgnoreCase("exit")) {
+                    textArea.append("user #" + userID + " disconnected. \n");
                     out.println("You disconnected from server");
                     connectionCounter--;
+                    userCounter.setText(connectionCounter + " users is connected.");
                     break;
                 } else {
-                    broadcast("user #" + numberOfUser + " said: " + message);
+                    broadcast("user #" + userID + " said: " + message);
+                    textArea.append("user #" + userID + " said: " + message + "\n");
                 }
             }
             inputStream.close();

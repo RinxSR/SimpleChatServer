@@ -52,7 +52,7 @@ public class SocketHandler implements Runnable {
 
     }
 
-    public void sendMessage() {
-        out.println(textField.getText());
+    public void sendMessage(String message) {
+        out.println(message);
     }
 }

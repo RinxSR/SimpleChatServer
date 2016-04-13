@@ -4,26 +4,31 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
-public class MainWindow {
+public class MainWindow extends JFrame{
 
-    public void start() {
+    private static MainWindow instance;
 
-        JFrame frame = new JFrame("Online Chat");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(500, 500);
+    private MainWindow() {
+
+        setTitle("Online Chat");
+        setSize(500, 500);
+        setLocationByPlatform(true);
 
         JTextArea textArea = new JTextArea();
-
         JTextField textField = new JTextField();
 
-        SocketHandler handler = new SocketHandler(textField, textArea, frame);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        SocketHandler handler = new SocketHandler(textField, textArea, this);
         new Thread(handler).start();
 
         textField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handler.sendMessage();
+                handler.sendMessage(textField.getText());
                 textField.setText("");
             }
         });
@@ -35,17 +40,61 @@ public class MainWindow {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handler.sendMessage();
+                handler.sendMessage(textField.getText());
                 textField.setText("");
             }
         });
 
-        frame.add(textArea);
-        frame.add(panel, BorderLayout.SOUTH);
+        add(scrollPane);
+        add(panel, BorderLayout.SOUTH);
 
         panel.add(textField);
         panel.add(button,BorderLayout.EAST);
 
-        frame.setVisible(true);
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                handler.sendMessage("exit");
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
+
+        setVisible(true);
+    }
+
+    public static synchronized MainWindow getInstance() {
+        if (instance == null) {
+            instance = new MainWindow();
+        }
+        return instance;
     }
 }
